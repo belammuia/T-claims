@@ -1,0 +1,12 @@
+/*env
+
+__pycache__
+*.pyc
+*.pyo
+
+.DS-STORE
+*.json
+*.db
+/**/migrations/
+!/**/migrations/__init__.py
+
