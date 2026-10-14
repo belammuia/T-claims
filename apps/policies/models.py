@@ -1,0 +1,40 @@
+from django.conf import settings
+from django.db import models
+
+
+class Vehicle(models.Model):
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="vehicles")
+    name = models.CharField(max_length=100)  
+    registration_number = models.CharField(max_length=20, unique=True)
+
+    def __str__(self):
+        return self.registration_number
+
+class VehicleImage(models.Model):
+    vehicle = models.ForeignKey(Vehicle, on_delete=models.CASCADE, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+
+class Policy(models.Model):
+    class PolicyType(models.TextChoices):
+        THIRD_PARTY = "third_party", "Third Party Only"
+        TPFT = "tpft", "Third Party, Fire & Theft"
+        COMPREHENSIVE = "comprehensive", "Comprehensive"
+
+    class Status(models.TextChoices):
+        ACTIVE = "active", "Active"
+        EXPIRED = "expired", "Expired"
+        CANCELLED = "cancelled", "Cancelled"
+
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="policies")
+    vehicle = models.ForeignKey(Vehicle, on_delete=models.PROTECT, related_name="policies")
+    policy_number = models.CharField(max_length=50, unique=True)
+    policy_type = models.CharField(max_length=20, choices=PolicyType.choices, default=PolicyType.THIRD_PARTY)
+    status = models.CharField(max_length=20, choices=Status.choices, default=Status.ACTIVE)
+    start_date = models.DateField()
+    end_date = models.DateField()
+    insurer_name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.policy_number
